@@ -1,0 +1,80 @@
+:root {
+  --bg: #f7f9f7;
+  --card: #ffffff;
+  --ink: #1f2933;
+  --muted: #52606d;
+  --accent: #0b6e4f;
+  --accent-dark: #084f38;
+  --line: #d9e2e8;
+  font-family: system-ui, -apple-system, sans-serif;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--ink);
+}
+
+.container {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 16px;
+}
+
+header h1 { font-size: 1.75rem; margin-bottom: 4px; }
+.tagline { color: var(--muted); margin-top: 0; }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 16px;
+  margin-top: 16px;
+}
+
+.card h2 { font-size: 1.15rem; margin-top: 0; }
+
+button {
+  font-size: 1rem;
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: none;
+  background: var(--accent);
+  color: #fff;
+  cursor: pointer;
+  margin: 4px 4px 4px 0;
+}
+
+button:hover { background: var(--accent-dark); }
+
+.status { color: var(--muted); min-height: 1.2em; }
+
+.fallback { margin-top: 8px; }
+.fallback label { display: block; margin-bottom: 4px; color: var(--muted); }
+.fallback .row { display: flex; gap: 8px; }
+.fallback input {
+  flex: 1;
+  font-size: 1rem;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+}
+
+ul { list-style: none; padding: 0; margin: 8px 0; }
+li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--line);
+}
+li:last-child { border-bottom: none; }
+li .meta { color: var(--muted); font-size: 0.9rem; }
+
+.row { display: flex; gap: 8px; align-items: center; }
+.row button { margin: 4px 0 0 0; }
+
+#cart-total { font-weight: 600; }

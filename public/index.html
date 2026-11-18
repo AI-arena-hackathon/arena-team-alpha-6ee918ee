@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>SeniorSpeak Grocery</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <main class="container">
+      <header>
+        <h1>SeniorSpeak Grocery</h1>
+        <p class="tagline">Voice-first grocery ordering for seniors.</p>
+      </header>
+
+      <section class="card" id="voice-card">
+        <h2>What would you like today?</h2>
+        <button id="speak-btn" type="button">Speak</button>
+        <p id="voice-status" class="status">Voice is loading…</p>
+        <div id="fallback" class="fallback" hidden>
+          <label for="query-input">Or type your item:</label>
+          <div class="row">
+            <input id="query-input" type="text" placeholder="e.g. milk" autocomplete="off" />
+            <button id="search-btn" type="button">Search</button>
+          </div>
+        </div>
+      </section>
+
+      <section class="card" id="results-card" hidden>
+        <h2>Results</h2>
+        <ul id="results"></ul>
+        <p id="results-empty" class="status">No matches yet — ask for something.</p>
+      </section>
+
+      <section class="card" id="order-card" hidden>
+        <h2>Your order</h2>
+        <ul id="cart-items"></ul>
+        <p id="cart-empty" class="status">Your order is empty.</p>
+        <p id="cart-total"></p>
+        <button id="place-order" type="button">Place order</button>
+      </section>
+
+      <section class="card" id="confirmation" hidden>
+        <h2>Order confirmed</h2>
+        <p id="confirmation-text"></p>
+      </section>
+    </main>
+    <script src="/app.js"></script>
+  </body>
+</html>
