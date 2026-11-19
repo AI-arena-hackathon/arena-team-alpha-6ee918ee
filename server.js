@@ -29,26 +29,20 @@ function createApp() {
         error: { code: 'VALIDATION_ERROR', message: 'skus must be an array of item codes' },
       });
     }
-    try {
-      const order = createOrder(skus);
-      const delivery = scheduleDelivery(order);
-      return res.status(201).json({ ...order, delivery });
-    } catch (err) {
-      if (/unknown sku/i.test(err.message)) {
-        return res.status(422).json({ error: { code: 'UNKNOWN_SKU', message: err.message } });
-      }
-      throw err;
-    }
+    const order = createOrder(skus);
+    const delivery = scheduleDelivery(order);
+    return res.status(201).json({ ...order, delivery });
   });
 
   app.use((err, req, res, next) => {
-    const status = err && err.status ? err.status : 500;
-    if (status >= 500) {
+    const status = (err && (err.status || err.statusCode)) || 500;
+    const isServerError = status >= 500;
+    if (isServerError) {
       console.error('request error:', err && err.message);
     }
-    return res.status(status).json({
-      error: { code: status >= 500 ? 'INTERNAL_ERROR' : 'BAD_REQUEST', message: status >= 500 ? 'internal error' : 'bad request' },
-    });
+    const code = isServerError ? 'INTERNAL_ERROR' : (err && err.code) || 'BAD_REQUEST';
+    const message = isServerError ? 'internal error' : (err && err.code) || 'bad request';
+    return res.status(status).json({ error: { code, message } });
   });
 
   return app;

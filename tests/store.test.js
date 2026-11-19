@@ -24,3 +24,22 @@ test('rejects an unknown sku', () => {
 test('rejects an empty sku list', () => {
   assert.throws(() => createOrder([]), /at least one/i);
 });
+
+test('rejects an empty sku list with a validation error status', () => {
+  try {
+    createOrder([]);
+    assert.fail('expected createOrder([]) to throw');
+  } catch (err) {
+    assert.equal(err.statusCode, 422);
+  }
+});
+
+test('tags unknown sku errors with an UNKNOWN_SKU code and status', () => {
+  try {
+    createOrder(['nope-not-real']);
+    assert.fail('expected createOrder to throw for an unknown sku');
+  } catch (err) {
+    assert.equal(err.code, 'UNKNOWN_SKU');
+    assert.equal(err.statusCode, 422);
+  }
+});

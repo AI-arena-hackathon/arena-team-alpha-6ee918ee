@@ -72,27 +72,35 @@ async function runSearch() {
     resultsEmpty.textContent = 'Type or say something to search.';
     return;
   }
-  const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
-  const body = await res.json();
-  results.innerHTML = '';
-  if (!body.results || body.results.length === 0) {
-    resultsEmpty.textContent = `No matches for "${q}".`;
-    return;
-  }
-  resultsEmpty.textContent = '';
-  for (const product of body.results) {
-    const li = document.createElement('li');
-    const name = document.createElement('span');
-    name.textContent = product.name;
-    const meta = document.createElement('span');
-    meta.className = 'meta';
-    meta.textContent = `${product.category} · $${product.price.toFixed(2)}`;
-    const addBtn = document.createElement('button');
-    addBtn.type = 'button';
-    addBtn.textContent = 'Add';
-    addBtn.addEventListener('click', () => addToCart(product));
-    li.append(name, meta, addBtn);
-    results.appendChild(li);
+  try {
+    const res = await fetch(`/api/search?q=${encodeURIComponent(q)}`);
+    const body = await res.json();
+    results.innerHTML = '';
+    if (!res.ok) {
+      resultsEmpty.textContent = (body && body.error && body.error.message) || 'Search failed. Please try again.';
+      return;
+    }
+    if (!body.results || body.results.length === 0) {
+      resultsEmpty.textContent = `No matches for "${q}".`;
+      return;
+    }
+    resultsEmpty.textContent = '';
+    for (const product of body.results) {
+      const li = document.createElement('li');
+      const name = document.createElement('span');
+      name.textContent = product.name;
+      const meta = document.createElement('span');
+      meta.className = 'meta';
+      meta.textContent = `${product.category} · $${product.price.toFixed(2)}`;
+      const addBtn = document.createElement('button');
+      addBtn.type = 'button';
+      addBtn.textContent = 'Add';
+      addBtn.addEventListener('click', () => addToCart(product));
+      li.append(name, meta, addBtn);
+      results.appendChild(li);
+    }
+  } catch {
+    resultsEmpty.textContent = 'Could not reach the search service. Please try again.';
   }
 }
 
@@ -140,21 +148,26 @@ function renderCart() {
 async function placeOrder() {
   const skus = Array.from(cart.keys());
   if (skus.length === 0) return;
-  const res = await fetch('/api/orders', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ skus }),
-  });
-  const body = await res.json();
-  if (!res.ok) {
-    confirmationText.textContent = body.error && body.error.message ? body.error.message : 'Could not place order.';
+  try {
+    const res = await fetch('/api/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ skus }),
+    });
+    const body = await res.json();
+    if (!res.ok) {
+      confirmationText.textContent = (body && body.error && body.error.message) || 'Could not place order. Please try again.';
+      confirmation.hidden = false;
+      return;
+    }
+    confirmationText.textContent = `Order ${body.orderId} confirmed. Scheduled for ${body.delivery.deliveryDate}.`;
     confirmation.hidden = false;
-    return;
+    cart.clear();
+    renderCart();
+  } catch {
+    confirmationText.textContent = 'Could not reach the order service. Please try again.';
+    confirmation.hidden = false;
   }
-  confirmationText.textContent = `Order ${body.orderId} confirmed. Scheduled for ${body.delivery.deliveryDate}.`;
-  confirmation.hidden = false;
-  cart.clear();
-  renderCart();
 }
 
 searchBtn.addEventListener('click', () => {
