@@ -1,7 +1,8 @@
 const express = require('express');
 const helmet = require('helmet');
 const path = require('path');
-const { searchProducts } = require('./lib/catalog');
+const { getConfig } = require('./lib/config');
+const { loadCatalog, searchProducts } = require('./lib/catalog');
 const { createOrder } = require('./lib/store');
 const { scheduleDelivery } = require('./lib/delivery');
 
@@ -15,9 +16,16 @@ function createApp() {
     res.json({ status: 'ok' });
   });
 
+  app.get('/favicon.ico', (req, res) => {
+    res.status(204).end();
+  });
+
+  const config = getConfig();
+  const catalog = loadCatalog(config.catalogPath);
+
   app.get('/api/search', (req, res) => {
     const q = typeof req.query.q === 'string' ? req.query.q : '';
-    const results = searchProducts(q);
+    const results = searchProducts(q, catalog);
     return res.json({ query: q, results });
   });
 
@@ -50,7 +58,7 @@ function createApp() {
 
 if (require.main === module) {
   const app = createApp();
-  const port = Number(process.env.PORT) || 3000;
+  const port = getConfig().port;
   app.listen(port, () => {
     console.log(`SeniorSpeak Grocery listening on http://localhost:${port}`);
   });

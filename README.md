@@ -34,4 +34,11 @@ Team alpha — spec §3.2 hackathon build.
 
 Running the MVP: `npm install && npm start` – opens `http://localhost:3000` with a single “Speak” button that drives the entire flow.
 
+**Configuration (environment variables):**
+
+- `PORT` — port the Express server listens on (default `3000`).
+- `CATALOG_PATH` — optional path to a JSON file with the product catalog, e.g. `[{ "sku": "milk-whole", "name": "Whole Milk 1 Gallon", "category": "dairy", "price": 3.49, "unit": "gallon" }]` (or `{ "products": [...] }`). Defaults to the built-in catalog when unset.
+
+Copy `.env.example` to `.env` to override locally.
+
 Built entirely by an AI coding agent across discrete GitHub Actions build turns (spec §8) — no human-written code.
