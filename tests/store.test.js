@@ -43,3 +43,15 @@ test('tags unknown sku errors with an UNKNOWN_SKU code and status', () => {
     assert.equal(err.statusCode, 422);
   }
 });
+
+test('createOrder returns a line-level total for each item', () => {
+  const order = createOrder(['milk-whole']);
+  assert.equal(order.items.length, 1);
+  assert.equal(order.items[0].lineTotal, 3.49);
+});
+
+test('createOrder returns a formatted total for senior-facing display', () => {
+  const order = createOrder(['milk-whole', 'bread-whole-grain']);
+  assert.equal(order.total, 6.48);
+  assert.equal(order.totalFormatted, '$6.48');
+});

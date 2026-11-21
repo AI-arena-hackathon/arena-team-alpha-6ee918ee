@@ -13,12 +13,18 @@ const cartTotal = document.getElementById('cart-total');
 const placeOrderBtn = document.getElementById('place-order');
 const confirmation = document.getElementById('confirmation');
 const confirmationText = document.getElementById('confirmation-text');
+const liveRegion = document.getElementById('aria-live');
 
 const cart = new Map();
+
+function announce(text) {
+  if (liveRegion) liveRegion.textContent = text;
+}
 
 function showFallback() {
   fallback.hidden = false;
   speakBtn.hidden = true;
+  queryInput.focus();
 }
 
 function hideFallback() {
@@ -28,6 +34,7 @@ function hideFallback() {
 
 function setVoiceStatus(text) {
   voiceStatus.textContent = text;
+  announce(text);
 }
 
 function initVoice() {
@@ -78,13 +85,16 @@ async function runSearch() {
     results.innerHTML = '';
     if (!res.ok) {
       resultsEmpty.textContent = (body && body.error && body.error.message) || 'Search failed. Please try again.';
+      announce(resultsEmpty.textContent);
       return;
     }
     if (!body.results || body.results.length === 0) {
       resultsEmpty.textContent = `No matches for "${q}".`;
+      announce(resultsEmpty.textContent);
       return;
     }
     resultsEmpty.textContent = '';
+    announce(`${body.results.length} results found.`);
     for (const product of body.results) {
       const li = document.createElement('li');
       const name = document.createElement('span');
@@ -95,12 +105,14 @@ async function runSearch() {
       const addBtn = document.createElement('button');
       addBtn.type = 'button';
       addBtn.textContent = 'Add';
+      addBtn.setAttribute('aria-label', `Add ${product.name} to cart`);
       addBtn.addEventListener('click', () => addToCart(product));
       li.append(name, meta, addBtn);
       results.appendChild(li);
     }
   } catch {
     resultsEmpty.textContent = 'Could not reach the search service. Please try again.';
+    announce('Could not reach the search service. Please try again.');
   }
 }
 
@@ -116,6 +128,7 @@ function addToCart(product) {
 
 function renderCart() {
   cartItems.innerHTML = '';
+  placeOrderBtn.disabled = cart.size === 0;
   if (cart.size === 0) {
     orderCard.hidden = true;
     cartEmpty.textContent = 'Your order is empty.';
@@ -158,15 +171,18 @@ async function placeOrder() {
     if (!res.ok) {
       confirmationText.textContent = (body && body.error && body.error.message) || 'Could not place order. Please try again.';
       confirmation.hidden = false;
+      announce(confirmationText.textContent);
       return;
     }
     confirmationText.textContent = `Order ${body.orderId} confirmed. Scheduled for ${body.delivery.deliveryDate}.`;
     confirmation.hidden = false;
+    announce(confirmationText.textContent);
     cart.clear();
     renderCart();
   } catch {
     confirmationText.textContent = 'Could not reach the order service. Please try again.';
     confirmation.hidden = false;
+    announce(confirmationText.textContent);
   }
 }
 
@@ -178,8 +194,16 @@ placeOrderBtn.addEventListener('click', () => {
   placeOrder();
 });
 
+queryInput.addEventListener('keydown', (event) => {
+  if (event.key === 'Enter') {
+    event.preventDefault();
+    runSearch();
+  }
+});
+
 queryInput.addEventListener('input', () => {
   // debounce-free: search on submit only
 });
 
+renderCart();
 initVoice();

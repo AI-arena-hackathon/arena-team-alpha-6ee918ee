@@ -13,35 +13,37 @@
         <p class="tagline">Voice-first grocery ordering for seniors.</p>
       </header>
 
-      <section class="card" id="voice-card">
-        <h2>What would you like today?</h2>
+      <div id="aria-live" class="sr-only" role="status" aria-live="polite"></div>
+
+      <section class="card" id="voice-card" aria-labelledby="voice-heading">
+        <h2 id="voice-heading">What would you like today?</h2>
         <button id="speak-btn" type="button">Speak</button>
         <p id="voice-status" class="status">Voice is loading…</p>
         <div id="fallback" class="fallback" hidden>
           <label for="query-input">Or type your item:</label>
           <div class="row">
-            <input id="query-input" type="text" placeholder="e.g. milk" autocomplete="off" />
+            <input id="query-input" type="text" placeholder="e.g. milk" autocomplete="off" enterkeyhint="search" />
             <button id="search-btn" type="button">Search</button>
           </div>
         </div>
       </section>
 
-      <section class="card" id="results-card" hidden>
-        <h2>Results</h2>
-        <ul id="results"></ul>
+      <section class="card" id="results-card" hidden aria-labelledby="results-heading">
+        <h2 id="results-heading">Results</h2>
+        <ul id="results" aria-label="Search results"></ul>
         <p id="results-empty" class="status">No matches yet — ask for something.</p>
       </section>
 
-      <section class="card" id="order-card" hidden>
-        <h2>Your order</h2>
-        <ul id="cart-items"></ul>
+      <section class="card" id="order-card" hidden aria-labelledby="order-heading">
+        <h2 id="order-heading">Your order</h2>
+        <ul id="cart-items" aria-label="Your cart"></ul>
         <p id="cart-empty" class="status">Your order is empty.</p>
         <p id="cart-total"></p>
         <button id="place-order" type="button">Place order</button>
       </section>
 
-      <section class="card" id="confirmation" hidden>
-        <h2>Order confirmed</h2>
+      <section class="card" id="confirmation" hidden aria-labelledby="confirmation-heading">
+        <h2 id="confirmation-heading">Order confirmed</h2>
         <p id="confirmation-text"></p>
       </section>
     </main>
