@@ -97,3 +97,19 @@ test('POST /api/orders returns a VALIDATION_ERROR for an empty sku list', async 
     server.close();
   }
 });
+
+test('POST /api/orders returns a VALIDATION_ERROR for an empty-string sku', async () => {
+  const { server, port } = await startApp();
+  try {
+    const res = await fetch(`http://127.0.0.1:${port}/api/orders`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ skus: [''] }),
+    });
+    const body = await res.json();
+    assert.equal(res.status, 422);
+    assert.equal(body.error.code, 'VALIDATION_ERROR');
+  } finally {
+    server.close();
+  }
+});

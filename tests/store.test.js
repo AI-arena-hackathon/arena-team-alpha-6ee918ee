@@ -55,3 +55,23 @@ test('createOrder returns a formatted total for senior-facing display', () => {
   assert.equal(order.total, 6.48);
   assert.equal(order.totalFormatted, '$6.48');
 });
+
+test('createOrder rejects an empty sku string with a VALIDATION_ERROR', () => {
+  try {
+    createOrder(['']);
+    assert.fail('expected createOrder to throw for an empty sku');
+  } catch (err) {
+    assert.equal(err.statusCode, 422);
+    assert.equal(err.code, 'VALIDATION_ERROR');
+  }
+});
+
+test('createOrder rejects a non-string sku entry with a VALIDATION_ERROR', () => {
+  try {
+    createOrder([null]);
+    assert.fail('expected createOrder to throw for a non-string sku');
+  } catch (err) {
+    assert.equal(err.statusCode, 422);
+    assert.equal(err.code, 'VALIDATION_ERROR');
+  }
+});

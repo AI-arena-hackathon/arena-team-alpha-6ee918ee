@@ -47,12 +47,14 @@ function initVoice() {
   const recognition = new Ctor();
   recognition.continuous = false;
   recognition.interimResults = false;
+  let awaitingUtterance = true;
   recognition.onresult = (event) => {
     let transcript = '';
     for (let i = 0; i < event.results.length; i += 1) {
       transcript += event.results[i][0].transcript;
     }
     if (transcript) {
+      awaitingUtterance = false;
       queryInput.value = transcript;
       runSearch();
     }
@@ -62,12 +64,18 @@ function initVoice() {
     setVoiceStatus('Voice not available — please type your item.');
   };
   recognition.onend = () => {
-    setVoiceStatus('Voice listening… press Speak when ready');
+    setVoiceStatus(awaitingUtterance ? 'Voice listening… press Speak when ready' : 'Voice ready — press Speak to order again');
   };
   speakBtn.hidden = false;
+  setVoiceStatus('Press Speak when ready');
   speakBtn.addEventListener('click', () => {
-    recognition.start();
-    setVoiceStatus('Listening… speak now');
+    try {
+      recognition.start();
+      setVoiceStatus('Listening… speak now');
+    } catch {
+      showFallback();
+      setVoiceStatus('Voice not available — please type your item.');
+    }
   });
 }
 
@@ -199,10 +207,6 @@ queryInput.addEventListener('keydown', (event) => {
     event.preventDefault();
     runSearch();
   }
-});
-
-queryInput.addEventListener('input', () => {
-  // debounce-free: search on submit only
 });
 
 renderCart();
